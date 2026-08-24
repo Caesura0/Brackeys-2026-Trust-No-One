@@ -1,0 +1,9 @@
+{
+  "id": "ENDING_TRUTH_SEEKER",
+  "name": "Truth Seeker",
+  "description": "You refused to blindly follow the orders.",
+  "conditions": {
+    "innocentsExecuted": 0,
+    "hereticsReleased": 0
+  }
+}

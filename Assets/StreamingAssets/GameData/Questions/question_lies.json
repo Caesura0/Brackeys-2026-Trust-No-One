@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_LIES",
+  "text": "Why did you lie about visiting the chapel?",
+  "responses": [
+    {
+      "condition": "liedAboutChapel == true",
+      "answer": "I... I didn't want my wife to know I was out."
+    }
+  ]
+}

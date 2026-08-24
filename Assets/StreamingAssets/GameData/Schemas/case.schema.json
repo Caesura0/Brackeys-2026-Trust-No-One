@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Case Data",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the case, e.g. CASE_001"
+    },
+    "suspectId": {
+      "type": "string"
+    },
+    "accusation": {
+      "type": "string"
+    },
+    "evidenceIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "questionIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "truth": {
+      "type": "object",
+      "description": "Flexible key-value pairs representing the actual truth of the case.",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean"]
+      }
+    }
+  },
+  "required": [
+    "id",
+    "suspectId",
+    "accusation",
+    "evidenceIds",
+    "questionIds",
+    "truth"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_MOTIVE",
+  "text": "So you were meeting someone near the chapel?",
+  "responses": [
+    {
+      "condition": "reasonForLying != null",
+      "answer": "Yes. It had nothing to do with heresy."
+    }
+  ]
+}

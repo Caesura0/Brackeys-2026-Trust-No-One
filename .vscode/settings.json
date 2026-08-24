@@ -1,0 +1,34 @@
+{
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "/Assets/StreamingAssets/GameData/Cases/*.json"
+            ],
+            "url": "./Assets/StreamingAssets/GameData/Schemas/case.schema.json"
+        },
+        {
+            "fileMatch": [
+                "/Assets/StreamingAssets/GameData/Suspects/*.json"
+            ],
+            "url": "./Assets/StreamingAssets/GameData/Schemas/suspect.schema.json"
+        },
+        {
+            "fileMatch": [
+                "/Assets/StreamingAssets/GameData/Questions/*.json"
+            ],
+            "url": "./Assets/StreamingAssets/GameData/Schemas/question.schema.json"
+        },
+        {
+            "fileMatch": [
+                "/Assets/StreamingAssets/GameData/Evidence/*.json"
+            ],
+            "url": "./Assets/StreamingAssets/GameData/Schemas/evidence.schema.json"
+        },
+        {
+            "fileMatch": [
+                "/Assets/StreamingAssets/GameData/Endings/*.json"
+            ],
+            "url": "./Assets/StreamingAssets/GameData/Schemas/ending.schema.json"
+        }
+    ]
+}

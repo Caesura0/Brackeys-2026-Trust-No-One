@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_SYMBOL",
+  "text": "We found a forbidden symbol in your barn. Explain.",
+  "responses": [
+    {
+      "condition": "ownsForbiddenSymbol == true",
+      "answer": "I found it in the fields. I didn't know what it meant."
+    }
+  ]
+}

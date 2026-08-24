@@ -1,0 +1,24 @@
+{
+  "id": "CASE_001",
+  "suspectId": "SUSPECT_THOMAS",
+  "accusation": "Practicing forbidden beliefs.",
+  "evidenceIds": [
+    "EVIDENCE_NEIGHBOR_REPORT",
+    "EVIDENCE_FORBIDDEN_SYMBOL",
+    "EVIDENCE_MUDDY_BOOTS"
+  ],
+  "questionIds": [
+    "QUESTION_WHEREABOUTS",
+    "QUESTION_CHAPEL",
+    "QUESTION_SYMBOL",
+    "QUESTION_LIES",
+    "QUESTION_MOTIVE"
+  ],
+  "truth": {
+    "isHeretic": false,
+    "visitedChapel": true,
+    "ownsForbiddenSymbol": true,
+    "liedAboutChapel": true,
+    "reasonForLying": "Secretly meeting a lover near the chapel"
+  }
+}

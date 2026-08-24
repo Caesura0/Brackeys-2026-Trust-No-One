@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_CHAPEL",
+  "text": "Have you ever visited the old chapel?",
+  "responses": [
+    {
+      "condition": "visitedChapel == true",
+      "answer": "No. I've never been there."
+    }
+  ]
+}

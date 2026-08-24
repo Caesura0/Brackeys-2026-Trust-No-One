@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_WHEREABOUTS",
+  "text": "Where were you last night?",
+  "responses": [
+    {
+      "condition": "liedAboutChapel == true",
+      "answer": "I was at home asleep. I never left the farm."
+    }
+  ]
+}
