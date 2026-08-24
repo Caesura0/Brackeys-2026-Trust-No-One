@@ -5,6 +5,8 @@ using GameData.Interrogation;
 using GameData.Models;
 using System.Collections.Generic;
 
+using System.Collections;
+
 namespace GameData.UI
 {
     /// <summary>
@@ -187,10 +189,11 @@ namespace GameData.UI
                 SuspectDescriptionText.text = suspect.Description;
             }
 
-            TranscriptText.text = "<b>INTERROGATION STARTED...</b>";
-
+            TranscriptText.text = "";
             PopulateEvidence(caseData);
             RefreshQuestions();
+
+            AppendToTranscript("<b>INTERROGATION STARTED...</b>");
         }
 
         private void PopulateEvidence(CaseData caseData)
@@ -281,19 +284,13 @@ namespace GameData.UI
         {
             string suspectName = _manager.GetCurrentSuspect()?.Name ?? "SUSPECT";
             
-            // Append to transcript
-            TranscriptText.text += $"\n\n<b>INQUISITOR</b>\n{result.QuestionText}\n\n<b>{suspectName.ToUpper()}</b>\n{result.AnswerText}";
+            string questionPart = $"\n\n<b>INQUISITOR</b>\n{result.QuestionText}";
+            string answerPart = $"\n\n<b>{suspectName.ToUpper()}</b>\n{result.AnswerText}";
             
             UpdateQuestionsRemaining();
             RefreshQuestions();
 
-            // Auto-scroll to bottom
-            Canvas.ForceUpdateCanvases();
-            var scroll = TranscriptText.GetComponentInParent<ScrollRect>();
-            if (scroll != null)
-            {
-                scroll.verticalNormalizedPosition = 0f;
-            }
+            AppendToTranscript(questionPart, answerPart);
         }
 
         /// <summary>
@@ -309,8 +306,8 @@ namespace GameData.UI
         private void HandleJudgmentAvailable()
         {
             JudgmentPanel.SetActive(true);
-            if (GuiltyButton != null) GuiltyButton.interactable = true;
-            if (InnocentButton != null) InnocentButton.interactable = true;
+            // We intentionally do not enable the buttons here.
+            // The TypewriterRoutine will enable them when it finishes typing the final response.
         }
 
         private void OnJudgmentClicked(Judgment j)
@@ -367,6 +364,112 @@ namespace GameData.UI
         private void UpdateQuestionsRemaining()
         {
             QuestionsRemainingText.text = $"QUESTIONS: {_manager.GetQuestionsRemaining()} / 3";
+        }
+
+        private Coroutine _typewriterCoroutine;
+        private float _typewriterSpeed = 0.02f; // Seconds per character
+
+        private void AppendToTranscript(params string[] textBlocks)
+        {
+            if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
+            _typewriterCoroutine = StartCoroutine(TypewriterRoutineBlocks(textBlocks));
+        }
+
+        private IEnumerator TypewriterRoutineBlocks(string[] blocks)
+        {
+            // Disable interaction while typing
+            SetButtonsInteractable(false);
+            var scroll = TranscriptText.GetComponentInParent<ScrollRect>();
+            bool skipped = false;
+
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                // Ensure TMP has parsed current text to get an accurate character count before appending
+                TranscriptText.ForceMeshUpdate();
+                int startCount = TranscriptText.textInfo.characterCount;
+
+                TranscriptText.text += blocks[i];
+                
+                // Force mesh update again to layout the newly added text
+                TranscriptText.ForceMeshUpdate();
+                Canvas.ForceUpdateCanvases();
+                
+                int endCount = TranscriptText.textInfo.characterCount;
+                TranscriptText.maxVisibleCharacters = startCount;
+
+                if (!skipped)
+                {
+                    while (TranscriptText.maxVisibleCharacters < endCount)
+                    {
+                        if (CheckSkipInput()) { skipped = true; break; }
+                        
+                        TranscriptText.maxVisibleCharacters += 1;
+                        if (scroll != null) scroll.verticalNormalizedPosition = 0f;
+                        yield return new WaitForSeconds(_typewriterSpeed);
+                    }
+                }
+                
+                // Ensure this block's characters are fully visible (important if we skipped)
+                TranscriptText.maxVisibleCharacters = endCount;
+                if (scroll != null) scroll.verticalNormalizedPosition = 0f;
+
+                // Dramatic pause between blocks (e.g. between question and answer)
+                if (!skipped && i < blocks.Length - 1)
+                {
+                    float pauseTimer = 1.0f; // 1 second pause
+                    while (pauseTimer > 0)
+                    {
+                        if (CheckSkipInput()) { skipped = true; break; }
+                        pauseTimer -= Time.deltaTime;
+                        yield return null;
+                    }
+                }
+            }
+            
+            // Ensure everything is visible at the very end
+            TranscriptText.maxVisibleCharacters = 99999;
+            if (scroll != null) scroll.verticalNormalizedPosition = 0f;
+
+            // Re-enable interaction
+            SetButtonsInteractable(true);
+        }
+
+        private bool CheckSkipInput()
+        {
+            bool skip = false;
+#if ENABLE_INPUT_SYSTEM
+            if (UnityEngine.InputSystem.Mouse.current != null && UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame) skip = true;
+            if (UnityEngine.InputSystem.Keyboard.current != null && (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame || UnityEngine.InputSystem.Keyboard.current.enterKey.wasPressedThisFrame)) skip = true;
+#else
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)) skip = true;
+#endif
+            return skip;
+        }
+
+        private void SetButtonsInteractable(bool interactable)
+        {
+            // If we have questions remaining, toggle the question buttons
+            if (_manager.GetQuestionsRemaining() > 0 && QuestionButtonContainer != null)
+            {
+                foreach (Transform child in QuestionButtonContainer)
+                {
+                    var btn = child.GetComponent<Button>();
+                    if (btn != null) btn.interactable = interactable;
+                }
+            }
+            
+            // If judgment is available, toggle the judgment buttons
+            if (_manager.CanSubmitJudgment())
+            {
+                if (GuiltyButton != null) GuiltyButton.interactable = interactable;
+                if (InnocentButton != null) InnocentButton.interactable = interactable;
+            }
+            else
+            {
+                // Force disable if we can't submit judgment yet
+                if (GuiltyButton != null) GuiltyButton.interactable = false;
+                if (InnocentButton != null) InnocentButton.interactable = false;
+            }
         }
     }
 }
