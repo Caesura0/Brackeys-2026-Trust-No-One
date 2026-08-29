@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Suspect Data",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the suspect, e.g. SUSPECT_THOMAS"
+    },
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "integer"
+    },
+    "occupation": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "portraitId": {
+      "type": "string",
+      "description": "ID matching a sprite in Resources/Portraits, e.g. portrait_thomas"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_MISSIONARY_TEACHINGS",
+  "text": "Your followers have been acting in questionable ways. What exactly have you been teaching them?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "I have taught nothing heretical! I swear they must have misunderstood my sermons. I only preach the Imperial Truth."
+    }
+  ]
+}

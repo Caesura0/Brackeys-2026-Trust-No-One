@@ -17,12 +17,6 @@ namespace GameData
 
         public void LoadAllData()
         {
-            string basePath = Path.Combine(Application.streamingAssetsPath, "GameData");
-            if (!Directory.Exists(basePath))
-            {
-                Debug.LogError($"GameData directory not found at path: {basePath}");
-                return;
-            }
 
             LoadCategory("Cases", _cases);
             LoadCategory("Suspects", _suspects);
@@ -35,16 +29,18 @@ namespace GameData
 
         private void LoadCategory<T>(string folderName, Dictionary<string, T> dictionary)
         {
-            string folderPath = Path.Combine(Application.streamingAssetsPath, "GameData", folderName);
-            if (!Directory.Exists(folderPath))
+            TextAsset[] textAssets = Resources.LoadAll<TextAsset>($"GameData/{folderName}");
+            if (textAssets == null || textAssets.Length == 0)
+            {
+                Debug.LogWarning($"[GameDataRepository] No TextAssets found in Resources/GameData/{folderName}");
                 return;
+            }
 
-            string[] files = Directory.GetFiles(folderPath, "*.json");
-            foreach (string file in files)
+            foreach (var textAsset in textAssets)
             {
                 try
                 {
-                    string json = File.ReadAllText(file);
+                    string json = textAsset.text;
                     T data = JsonConvert.DeserializeObject<T>(json);
                     
                     // Use reflection to get the 'Id' property and use it as key
@@ -67,7 +63,7 @@ namespace GameData
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Error loading {file}: {e.Message}");
+                    Debug.LogError($"Error loading {textAsset.name}: {e.Message}");
                 }
             }
         }

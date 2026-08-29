@@ -1,0 +1,8 @@
+{
+  "id": "SUSPECT_SERGEANT",
+  "name": "Sergeant Vane",
+  "age": 142,
+  "occupation": "Astartes Sergeant",
+  "description": "A loyalist sergeant conducting an unsanctioned, secret investigation.",
+  "portraitId": "portrait_sergeant"
+}

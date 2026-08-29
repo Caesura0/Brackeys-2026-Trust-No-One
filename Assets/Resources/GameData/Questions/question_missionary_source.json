@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_MISSIONARY_SOURCE",
+  "text": "Are you certain the voice is truly the Emperor? Could it be from another, darker source?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "It is the Emperor! I am His faithful servant! It couldn't be anything else... could it?"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_MISSIONARY_INSTRUCTIONS",
+  "text": "These 'visions' have given you increasingly specific instructions that lead your people to perform clearly heretical acts.",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "Heretical? No! I have never taught anything heretical! I only pass on the guidance I am given."
+    }
+  ]
+}

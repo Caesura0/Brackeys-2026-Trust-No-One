@@ -1,0 +1,9 @@
+{
+  "id": "ENDING_FAILURE",
+  "name": "HERETICAL INCOMPETENCE",
+  "description": "Your judgment is severely flawed. You are a danger to the Imperium. By order of the Lord Inquisitor, you are stripped of your rank and condemned to penal servitude.",
+  "conditions": {
+    "minCorrect": 0,
+    "maxCorrect": 1
+  }
+}

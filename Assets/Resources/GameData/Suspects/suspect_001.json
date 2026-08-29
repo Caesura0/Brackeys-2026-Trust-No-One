@@ -1,0 +1,8 @@
+{
+  "id": "SUSPECT_THOMAS",
+  "name": "Thomas Vale",
+  "age": 43,
+  "occupation": "Farmer",
+  "description": "A quiet farmer from the northern district.",
+  "portraitId": "portrait_thomas"
+}

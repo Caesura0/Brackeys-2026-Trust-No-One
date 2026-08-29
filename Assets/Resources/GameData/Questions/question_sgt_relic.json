@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_SGT_RELIC",
+  "text": "A forbidden relic was found in your possession. Why are you carrying heretical artifacts?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "The relic is evidence. I have no regrets regarding its acquisition. I refuse to explain further."
+    }
+  ]
+}

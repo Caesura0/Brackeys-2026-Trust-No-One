@@ -1,0 +1,19 @@
+{
+  "id": "CASE_003",
+  "suspectId": "SUSPECT_SERGEANT",
+  "accusation": "Cult association, falsifying official reports, and possession of forbidden relics.",
+  "evidenceIds": [
+    "EVIDENCE_SGT_CHAPEL",
+    "EVIDENCE_SGT_RELIC",
+    "EVIDENCE_SGT_PATROL"
+  ],
+  "questionIds": [
+    "QUESTION_SGT_CHAPEL",
+    "QUESTION_SGT_RELIC",
+    "QUESTION_SGT_PATROL",
+    "QUESTION_SGT_INVESTIGATION"
+  ],
+  "truth": {
+    "isHeretic": false
+  }
+}

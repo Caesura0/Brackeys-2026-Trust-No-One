@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_SURVIVORS",
+  "text": "How many Guardsmen survived the Karthax incident? Your report states 387, but the actual count is 412. Explain yourself immediately.",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "Four hundred and twelve. The report was incorrect. I falsified it because the method by which they survived would have resulted in my immediate censure. I used technology that was not mine to use."
+    }
+  ]
+}

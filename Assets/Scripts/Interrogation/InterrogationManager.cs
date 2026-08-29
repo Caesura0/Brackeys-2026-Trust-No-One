@@ -17,6 +17,20 @@ namespace GameData.Interrogation
         private GameDataRepository _repository;
         private InterrogationSession _session;
 
+        /// <summary>
+        /// The list of case IDs defining the order of progression.
+        /// </summary>
+        public List<string> CaseOrder { get; private set; }
+
+        /// <summary>
+        /// The current position in the CaseOrder progression.
+        /// </summary>
+        public int CurrentCaseIndex { get; private set; }
+
+        // Playthrough Score Tracking
+        public int TotalCasesCompleted { get; private set; }
+        public int TotalCorrectJudgments { get; private set; }
+
         // Events
         public event Action<CaseData> OnCaseStarted;
         public event Action<QuestionResponseResult> OnQuestionAsked;
@@ -24,13 +38,79 @@ namespace GameData.Interrogation
         public event Action OnJudgmentAvailable;
         public event Action<JudgmentResult> OnJudgmentSubmitted;
         public event Action<InterrogationSession> OnInterrogationCompleted;
+        public event Action<EndingData, int, int> OnPlaythroughCompleted;
 
         /// <summary>
-        /// Constructs a new InterrogationManager, injecting its dependency on the GameDataRepository.
+        /// Constructs a new InterrogationManager, injecting its dependency on the GameDataRepository
+        /// and optionally a custom case progression order.
         /// </summary>
-        public InterrogationManager(GameDataRepository repository)
+        public InterrogationManager(GameDataRepository repository, List<string> caseOrder = null)
         {
             _repository = repository;
+
+            if (caseOrder != null && caseOrder.Count > 0)
+            {
+                CaseOrder = new List<string>(caseOrder);
+            }
+            else
+            {
+                // Fallback: Populate case order dynamically from the repository, sorted alphabetically
+                CaseOrder = _repository.GetAllCases()
+                    .Select(c => c.Id)
+                    .OrderBy(id => id)
+                    .ToList();
+            }
+            CurrentCaseIndex = 0;
+        }
+
+        /// <summary>
+        /// Gets the Case ID of the current case in the progression chain.
+        /// </summary>
+        public string GetCurrentCaseId()
+        {
+            if (CaseOrder == null || CaseOrder.Count == 0) return null;
+            if (CurrentCaseIndex < 0 || CurrentCaseIndex >= CaseOrder.Count) return null;
+            return CaseOrder[CurrentCaseIndex];
+        }
+
+        /// <summary>
+        /// Starts the current case in the progression chain.
+        /// </summary>
+        public void StartCurrentCase()
+        {
+            string caseId = GetCurrentCaseId();
+            if (string.IsNullOrEmpty(caseId))
+            {
+                Debug.LogError("[InterrogationManager] Cannot start current case: case order is empty or index is out of range.");
+                return;
+            }
+            StartCase(caseId);
+        }
+
+        /// <summary>
+        /// Moves progression to the next case. Returns true if there is a next case,
+        /// or false if we have reached the end of the order list.
+        /// </summary>
+        public bool MoveToNextCase()
+        {
+            if (CaseOrder == null || CaseOrder.Count == 0) return false;
+            
+            if (CurrentCaseIndex + 1 < CaseOrder.Count)
+            {
+                CurrentCaseIndex++;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Resets the case progression index and playthrough score back to the beginning.
+        /// </summary>
+        public void ResetProgression()
+        {
+            CurrentCaseIndex = 0;
+            TotalCasesCompleted = 0;
+            TotalCorrectJudgments = 0;
         }
 
         /// <summary>
@@ -265,11 +345,14 @@ namespace GameData.Interrogation
             if (wasCorrect)
             {
                 outcome = judgment == Judgment.Guilty ? JudgmentOutcome.CorrectGuilty : JudgmentOutcome.CorrectInnocent;
+                TotalCorrectJudgments++;
             }
             else
             {
                 outcome = judgment == Judgment.Guilty ? JudgmentOutcome.InnocentExecuted : JudgmentOutcome.HereticReleased;
             }
+            
+            TotalCasesCompleted++;
 
             var result = new JudgmentResult
             {
@@ -294,6 +377,45 @@ namespace GameData.Interrogation
         public InterrogationState GetState()
         {
             return _session?.State ?? InterrogationState.NotStarted;
+        }
+
+        /// <summary>
+        /// Evaluates the playthrough ending based on the total correct judgments and fires OnPlaythroughCompleted.
+        /// </summary>
+        public void CompletePlaythrough()
+        {
+            EndingData earnedEnding = null;
+
+            foreach (var ending in _repository.GetAllEndings())
+            {
+                int minCorrect = 0;
+                int maxCorrect = 999;
+                
+                if (ending.Conditions != null)
+                {
+                    if (ending.Conditions.TryGetValue("minCorrect", out int min)) minCorrect = min;
+                    if (ending.Conditions.TryGetValue("maxCorrect", out int max)) maxCorrect = max;
+                }
+
+                if (TotalCorrectJudgments >= minCorrect && TotalCorrectJudgments <= maxCorrect)
+                {
+                    earnedEnding = ending;
+                    break;
+                }
+            }
+
+            if (earnedEnding == null)
+            {
+                // Fallback ending if none match
+                earnedEnding = new EndingData
+                {
+                    Id = "ENDING_UNKNOWN",
+                    Name = "UNKNOWN OUTCOME",
+                    Description = "The Inquisition's records are incomplete."
+                };
+            }
+
+            OnPlaythroughCompleted?.Invoke(earnedEnding, TotalCorrectJudgments, TotalCasesCompleted);
         }
     }
 }

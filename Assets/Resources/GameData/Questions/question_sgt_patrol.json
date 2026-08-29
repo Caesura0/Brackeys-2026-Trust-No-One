@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_SGT_PATROL",
+  "text": "You falsified your patrol report to conceal your location. Explain this blatant breach of protocol.",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "Protocol was broken out of necessity. The reality of the situation requires absolute secrecy."
+    }
+  ]
+}

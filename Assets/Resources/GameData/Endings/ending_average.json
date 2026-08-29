@@ -1,0 +1,9 @@
+{
+  "id": "ENDING_AVERAGE",
+  "name": "ADEQUATE SERVICE",
+  "description": "You survived, but mistakes were made. Lives were lost that did not need to be, and perhaps some heretics slipped your grasp. The Inquisition demands perfection, but for now, you remain in service.",
+  "conditions": {
+    "minCorrect": 2,
+    "maxCorrect": 3
+  }
+}

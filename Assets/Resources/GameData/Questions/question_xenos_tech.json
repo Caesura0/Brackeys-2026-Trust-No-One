@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_XENOS_TECH",
+  "text": "You are suspected of harboring ancient Xenos technology. The molecular structure matches materials from an alien vessel. What is your allegiance?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "It is coincidental. My allegiance is to the pursuit of knowledge."
+    }
+  ]
+}

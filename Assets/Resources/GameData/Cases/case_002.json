@@ -1,0 +1,18 @@
+{
+  "id": "CASE_002",
+  "suspectId": "SUSPECT_TECHPRIEST",
+  "accusation": "Harboring and utilizing unsanctioned Xenos technology.",
+  "evidenceIds": [
+    "EVIDENCE_MOLECULAR",
+    "EVIDENCE_REPORT"
+  ],
+  "questionIds": [
+    "QUESTION_XENOS_TECH",
+    "QUESTION_AUGMENT",
+    "QUESTION_SURVIVORS",
+    "QUESTION_DEVICE"
+  ],
+  "truth": {
+    "isHeretic": true
+  }
+}

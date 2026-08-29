@@ -1,0 +1,19 @@
+{
+  "id": "CASE_004",
+  "suspectId": "SUSPECT_MISSIONARY",
+  "accusation": "Spreading heresy through false visions and unwitting communion with Warp entities.",
+  "evidenceIds": [
+    "EVIDENCE_FOLLOWERS",
+    "EVIDENCE_VISIONS",
+    "EVIDENCE_HERETICAL_ACTS"
+  ],
+  "questionIds": [
+    "QUESTION_MISSIONARY_TEACHINGS",
+    "QUESTION_MISSIONARY_VISIONS",
+    "QUESTION_MISSIONARY_INSTRUCTIONS",
+    "QUESTION_MISSIONARY_SOURCE"
+  ],
+  "truth": {
+    "isHeretic": true
+  }
+}

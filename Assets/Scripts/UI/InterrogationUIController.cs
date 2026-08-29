@@ -38,6 +38,7 @@ namespace GameData.UI
         public TextMeshProUGUI QuestionsRemainingText;
 
         [Header("Suspect")]
+        public Image SuspectPortraitImage;
         public TextMeshProUGUI SuspectNameText;
         public TextMeshProUGUI SuspectAgeText;
         public TextMeshProUGUI SuspectOccupationText;
@@ -60,6 +61,14 @@ namespace GameData.UI
         public TextMeshProUGUI ResultTitleText;
         public TextMeshProUGUI ResultDescriptionText;
         public Button ContinueButton;
+        
+        [Header("Audio")]
+        public AudioSource TypewriterAudioSource;
+        public AudioSource PanelOpenAudioSource;
+        public AudioClip PanelOpenClip;
+        public float PanelAnimationDuration = 0.25f;
+        
+        private bool _isEndingScreenActive = false;
 
 
         private void Awake()
@@ -93,6 +102,7 @@ namespace GameData.UI
             _manager.OnQuestionLimitReached += HandleQuestionLimitReached;
             _manager.OnJudgmentAvailable += HandleJudgmentAvailable;
             _manager.OnJudgmentSubmitted += HandleJudgmentSubmitted;
+            _manager.OnPlaythroughCompleted += HandlePlaythroughCompleted;
 
         }
 
@@ -105,6 +115,7 @@ namespace GameData.UI
                 _manager.OnQuestionLimitReached -= HandleQuestionLimitReached;
                 _manager.OnJudgmentAvailable -= HandleJudgmentAvailable;
                 _manager.OnJudgmentSubmitted -= HandleJudgmentSubmitted;
+                _manager.OnPlaythroughCompleted -= HandlePlaythroughCompleted;
 
             }
         }
@@ -139,9 +150,9 @@ namespace GameData.UI
         /// </summary>
         private void ShowIntro(CaseData caseData, SuspectData suspectData, List<EvidenceData> evidenceList)
         {
-            CaseIntroPanel.SetActive(true);
             InterrogationPanel.SetActive(false);
             ResultPanel.SetActive(false);
+            ShowPanelAnimated(CaseIntroPanel);
 
             IntroCaseNumberText.text = $"CASE #{caseData.Id.Replace("CASE_", "")}";
             
@@ -158,11 +169,36 @@ namespace GameData.UI
                 evSummary += $"● {ev.Text}\n";
             }
             IntroEvidenceSummaryText.text = evSummary;
+
+            UpdatePortrait(suspectData);
+        }
+
+        private void UpdatePortrait(SuspectData suspect)
+        {
+            if (SuspectPortraitImage != null)
+            {
+                if (suspect != null && !string.IsNullOrEmpty(suspect.PortraitId))
+                {
+                    var sprite = Resources.Load<Sprite>($"Portraits/{suspect.PortraitId}");
+                    if (sprite != null)
+                    {
+                        SuspectPortraitImage.sprite = sprite;
+                        SuspectPortraitImage.gameObject.SetActive(true);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[InterrogationUIController] Portrait sprite 'Portraits/{suspect.PortraitId}' not found in Resources.");
+                    }
+                }
+                
+                SuspectPortraitImage.gameObject.SetActive(false);
+            }
         }
 
         private void OnBeginClicked()
         {
-            _manager.StartCase("CASE_001"); // Hardcoded for this testing phase
+            _manager.StartCase(_manager.GetCurrentCaseId());
         }
 
         /// <summary>
@@ -172,10 +208,11 @@ namespace GameData.UI
         private void HandleCaseStarted(CaseData caseData)
         {
             CaseIntroPanel.SetActive(false);
-            InterrogationPanel.SetActive(true);
             ResultPanel.SetActive(false);
-            QuestionPanel.SetActive(true);
             JudgmentPanel.SetActive(false);
+            QuestionPanel.SetActive(true);
+            
+            ShowPanelAnimated(InterrogationPanel);
 
             HeaderCaseNumberText.text = $"CASE #{caseData.Id.Replace("CASE_", "")}";
             UpdateQuestionsRemaining();
@@ -187,6 +224,7 @@ namespace GameData.UI
                 SuspectAgeText.text = $"AGE: {suspect.Age}";
                 SuspectOccupationText.text = $"OCCUPATION: {suspect.Occupation.ToUpper()}";
                 SuspectDescriptionText.text = suspect.Description;
+                UpdatePortrait(suspect);
             }
 
             TranscriptText.text = "";
@@ -305,7 +343,7 @@ namespace GameData.UI
 
         private void HandleJudgmentAvailable()
         {
-            JudgmentPanel.SetActive(true);
+            ShowPanelAnimated(JudgmentPanel);
             // We intentionally do not enable the buttons here.
             // The TypewriterRoutine will enable them when it finishes typing the final response.
         }
@@ -324,7 +362,7 @@ namespace GameData.UI
         private void HandleJudgmentSubmitted(JudgmentResult result)
         {
             InterrogationPanel.SetActive(false);
-            ResultPanel.SetActive(true);
+            ShowPanelAnimated(ResultPanel);
 
             switch (result.Outcome)
             {
@@ -351,14 +389,44 @@ namespace GameData.UI
             }
         }
 
-        //private void HandleInterrogationCompleted(InterrogationSession session)
-        //{
-        //    // Already handled via HandleJudgmentSubmitted
-        //}
+        private void HandlePlaythroughCompleted(EndingData ending, int correct, int total)
+        {
+            _isEndingScreenActive = true;
+            InterrogationPanel.SetActive(false);
+            ShowPanelAnimated(ResultPanel);
+
+            ResultTitleText.text = ending.Name.ToUpper();
+            ResultTitleText.color = new Color(0.8f, 0.7f, 0.2f); // Gold-ish color for endings
+            
+            ResultDescriptionText.text = $"{ending.Description}\n\n<b>FINAL SCORE: {correct} / {total}</b>";
+            
+            var btnText = ContinueButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (btnText != null) btnText.text = "RESTART";
+        }
 
         private void OnContinueClicked()
         {
-            ShowIntroFromData("CASE_001");//Change this to look for all cases.
+            if (_isEndingScreenActive)
+            {
+                _isEndingScreenActive = false;
+                _manager.ResetProgression();
+                
+                var btnText = ContinueButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (btnText != null) btnText.text = "CONTINUE";
+                
+                ShowIntroFromData(_manager.GetCurrentCaseId());
+                return;
+            }
+
+            if (_manager.MoveToNextCase())
+            {
+                ShowIntroFromData(_manager.GetCurrentCaseId());
+            }
+            else
+            {
+                Debug.Log("[InterrogationUIController] All cases completed! Evaluating endings.");
+                _manager.CompletePlaythrough();
+            }
         }
 
         private void UpdateQuestionsRemaining()
@@ -405,6 +473,17 @@ namespace GameData.UI
                         
                         TranscriptText.maxVisibleCharacters += 1;
                         if (scroll != null) scroll.verticalNormalizedPosition = 0f;
+                        
+                        // Play typing sound (throttle to every 3rd character to prevent ear-bleeding overlap)
+                        if (TypewriterAudioSource != null && TypewriterAudioSource.clip != null)
+                        {
+                            if (TranscriptText.maxVisibleCharacters % 3 == 0)
+                            {
+                                TypewriterAudioSource.pitch = Random.Range(0.95f, 1.05f);
+                                TypewriterAudioSource.PlayOneShot(TypewriterAudioSource.clip, 0.7f); // Play at 70% volume
+                            }
+                        }
+
                         yield return new WaitForSeconds(_typewriterSpeed);
                     }
                 }
@@ -470,6 +549,38 @@ namespace GameData.UI
                 if (GuiltyButton != null) GuiltyButton.interactable = false;
                 if (InnocentButton != null) InnocentButton.interactable = false;
             }
+        }
+
+        private void ShowPanelAnimated(GameObject panel)
+        {
+            if (panel == null) return;
+            
+            panel.SetActive(true);
+            
+            if (PanelOpenAudioSource != null && PanelOpenClip != null)
+            {
+                PanelOpenAudioSource.PlayOneShot(PanelOpenClip);
+            }
+
+            StartCoroutine(GrowAnimationRoutine(panel.transform));
+        }
+
+        private IEnumerator GrowAnimationRoutine(Transform t)
+        {
+            float elapsed = 0f;
+            Vector3 startScale = new Vector3(0.1f, 0.1f, 1f);
+            Vector3 targetScale = Vector3.one;
+            t.localScale = startScale;
+
+            while (elapsed < PanelAnimationDuration)
+            {
+                elapsed += Time.deltaTime;
+                float progress = elapsed / PanelAnimationDuration;
+                float ease = 1f - Mathf.Pow(1f - progress, 3f); // Cubic ease out
+                t.localScale = Vector3.LerpUnclamped(startScale, targetScale, ease);
+                yield return null;
+            }
+            t.localScale = targetScale;
         }
     }
 }

@@ -20,5 +20,8 @@ namespace GameData.Models
 
         [JsonProperty("description")]
         public string Description { get; set; }
+
+        [JsonProperty("portraitId")]
+        public string PortraitId { get; set; }
     }
 }

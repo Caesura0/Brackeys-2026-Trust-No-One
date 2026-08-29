@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_DEVICE",
+  "text": "Where is this unauthorized device now? Is it in your arm? Why did you keep it?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "The original machine was destroyed. However, I retained one component. I believed it to be of use to the Imperium."
+    }
+  ]
+}

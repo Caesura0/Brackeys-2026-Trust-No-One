@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_AUGMENT",
+  "text": "Your left manipulator differs from your other augmentations. Where was it manufactured?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "An old replacement. It was recovered during the Karthax campaign from a destroyed machine. Its origins are irrelevant."
+    }
+  ]
+}

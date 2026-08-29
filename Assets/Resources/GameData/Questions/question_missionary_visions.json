@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_MISSIONARY_VISIONS",
+  "text": "They claim you receive visions directly from the Emperor through dreams. Is this true?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "I... I do have visions. But they are holy! The Emperor speaks to me to guide my flock."
+    }
+  ]
+}

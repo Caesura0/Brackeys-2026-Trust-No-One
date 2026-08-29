@@ -1,0 +1,9 @@
+{
+  "id": "ENDING_PERFECT",
+  "name": "INQUISITOR EXEMPLAR",
+  "description": "You are a flawless servant of the Emperor. You have rooted out heresy where it grew and protected the innocent from the pyre. Your name will be recorded in the annals of the Ordo Hereticus.",
+  "conditions": {
+    "minCorrect": 4,
+    "maxCorrect": 4
+  }
+}

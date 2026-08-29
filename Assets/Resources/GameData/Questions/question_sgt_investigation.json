@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_SGT_INVESTIGATION",
+  "text": "Your terse answers make you look guilty. Who or what are you protecting with this secrecy?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "I am conducting an investigation. I will not compromise it until I am completely sure. That is all I will say on the matter."
+    }
+  ]
+}

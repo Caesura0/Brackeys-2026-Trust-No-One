@@ -1,0 +1,10 @@
+{
+  "id": "QUESTION_SGT_CHAPEL",
+  "text": "You were discovered inside a sealed chapel belonging to a disgraced cult. What were you doing there?",
+  "responses": [
+    {
+      "condition": "",
+      "answer": "I have done nothing wrong. My presence there was strictly for the protection of the Imperium."
+    }
+  ]
+}
